@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from "next/cache";
-import { insertTopic } from "./data";
+import { incrementVotes, insertTopic } from "./data";
 import { redirect } from "next/navigation";
 import { insertQuestion } from "./data";
 
@@ -32,5 +32,15 @@ export async function addQuestion(question: FormData) {
     } catch (error) {
       console.error("Database Error:", error);
       throw new Error("Failed to add question.");
+    }
+}
+
+export async function addVote(data: FormData) {
+    try {
+      incrementVotes(data.get('id') as string);
+      revalidatePath('/ui/topics/[id]', 'page');
+    } catch (error) {
+      console.error('Database Error:', error);
+      throw new Error('Failed to add vote.');
     }
 }
